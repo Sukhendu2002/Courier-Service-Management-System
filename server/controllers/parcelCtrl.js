@@ -69,7 +69,7 @@ exports.getParcelById = async (req, res) => {
 };
 
 exports.getParcelsByCustomerId = async (req, res) => {
-  const { customer_id } = req.params;
+  const { customer_id } = req.body;
   console.log(customer_id);
   try {
     const result = await Parcel.getParcelByCustomerId(customer_id);
@@ -82,6 +82,16 @@ exports.getParcelsByCustomerId = async (req, res) => {
 exports.getAllParcels = async (req, res) => {
   try {
     const result = await Parcel.getAllParcels();
+    res.status(200).json({ message: result });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.deleteParcel = async (req, res) => {
+  const { parcel_id } = req.params;
+  try {
+    const result = await Parcel.deleteParcel(parcel_id);
     res.status(200).json({ message: result });
   } catch (err) {
     console.log(err);

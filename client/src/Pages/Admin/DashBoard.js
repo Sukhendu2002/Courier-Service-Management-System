@@ -182,12 +182,36 @@ const DashBoard = () => {
           <Button
             style={{ width: "200px", marginBottom: "20px" }}
             variant="success"
+            onClick={() => {
+              setShowBranches(false);
+              setShowAddBranch(false);
+              setShowDeleteBranch(false);
+              setShowStaff(false);
+              setShowAddStaff(false);
+              setShowDeleteStaff(false);
+              setShowParcel(false);
+              setShowDeleteParcel(false);
+
+              setShowAddParcel(true);
+            }}
           >
             Add Parcel
           </Button>{" "}
           <Button
             style={{ width: "200px", marginBottom: "20px" }}
             variant="danger"
+            onClick={() => {
+              setShowBranches(false);
+              setShowAddBranch(false);
+              setShowDeleteBranch(false);
+              setShowStaff(false);
+              setShowAddStaff(false);
+              setShowDeleteStaff(false);
+              setShowParcel(false);
+              setShowAddParcel(false);
+
+              setShowDeleteParcel(true);
+            }}
           >
             Delete Parcel
           </Button>{" "}
@@ -200,6 +224,8 @@ const DashBoard = () => {
       {showAddStaff && <AddStaff />}
       {showDeleteStaff && <DeleteStaff />}
       {showParcel && <ShowParcel />}
+      {showAddParcel && <AddParcel />}
+      {showDeleteParcel && <DeleteParcel />}
     </div>
   );
 };
@@ -792,6 +818,219 @@ const ShowParcel = () => {
             ))}
           </tbody>
         </Table>
+      </div>
+    </div>
+  );
+};
+
+const AddParcel = () => {
+  const [parcelName, setParcelName] = useState("");
+  const [senderBranch, setSenderBranch] = useState("");
+  const [receiverBranch, setReceiverBranch] = useState("");
+  const [customerId, setCustomerId] = useState("");
+
+  const [branch, setBranch] = useState([]);
+  const [customer, setCustomer] = useState([]);
+
+  useEffect(() => {
+    getAllBranches();
+    getAllCustomers();
+  }, []);
+
+  const getAllBranches = async () => {
+    try {
+      await axios.get(`${server}/api/branch/`).then((res) => {
+        setBranch(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllCustomers = async () => {
+    try {
+      await axios.get(`${server}/api/customer/`).then((res) => {
+        setCustomer(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      parcelName === "" ||
+      senderBranch === "" ||
+      receiverBranch === "" ||
+      customerId === ""
+    ) {
+      alert("Please fill all the fields");
+      return;
+    }
+    try {
+      await axios
+        .post(`${server}/api/parcel/add`, {
+          parcel_name: parcelName,
+          sender_branch_id: senderBranch,
+          receiver_branch_id: receiverBranch,
+          customer_id: customerId,
+        })
+        .then((res) => {
+          console.log(res);
+          alert("Parcel Added");
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1
+        //make it center
+        style={{ textAlign: "center", marginTop: "20px" }}
+      >
+        Add Parcel
+      </h1>
+      <div
+        //make it center
+        style={{
+          textAlign: "center",
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Parcel Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Parcel Name"
+              onChange={(e) => setParcelName(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Sender Branch</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setSenderBranch(e.target.value)}
+            >
+              <option value="">Select Sender Branch</option>
+              {branch.map((branch) => (
+                <option value={branch.branch_id}>{branch.branch_name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Receiver Branch</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setReceiverBranch(e.target.value)}
+            >
+              <option value="">Select Receiver Branch</option>
+              {branch.map((branch) => (
+                <option value={branch.branch_id}>{branch.branch_name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Customer</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setCustomerId(e.target.value)}
+            >
+              <option value="">Select Customer</option>
+              {customer.map((customer) => (
+                <option value={customer.customer_id}>
+                  {customer.customer_name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Button
+            style={{ marginTop: "20px", width: "100px", marginBottom: "20px" }}
+            variant="primary"
+            type="submit"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </Form>
+      </div>
+    </div>
+  );
+};
+
+const DeleteParcel = () => {
+  const [parcelId, setParcelId] = useState("");
+
+  const handleSubmit = async (e) => {
+    console.log(parcelId);
+    e.preventDefault();
+    if (parcelId === "") {
+      alert("Please select a parcel");
+      return;
+    }
+    try {
+      await axios
+        .delete(`${server}/api/parcel/delete/${parcelId}`)
+        .then((res) => {
+          console.log(res);
+          alert("Parcel Deleted");
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1
+        //make it center
+        style={{ textAlign: "center", marginTop: "20px" }}
+      >
+        Delete Parcel
+      </h1>
+      <div
+        //make it center
+        style={{
+          textAlign: "center",
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Parcel Id</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Parcel Id"
+              onChange={(e) => setParcelId(e.target.value)}
+            />
+          </Form.Group>
+
+          <Button
+            style={{ marginTop: "20px", width: "100px", marginBottom: "20px" }}
+            variant="primary"
+            type="submit"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </Form>
       </div>
     </div>
   );

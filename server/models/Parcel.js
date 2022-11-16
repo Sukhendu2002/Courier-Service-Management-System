@@ -139,6 +139,25 @@ class Parcel {
     }
     return rows;
   }
+
+  static async deleteParcel(parcel_id) {
+    let sql = "SELECT * FROM parcel WHERE parcel_id = ?";
+    const [rows] = await db.execute(sql, [parcel_id]);
+    if (rows.length == 0) {
+      return "Parcel ID does not exist";
+    }
+
+    sql = "DELETE FROM parcel WHERE parcel_id = ?";
+    try {
+      const result = await db.execute(sql, [parcel_id]);
+      return {
+        message: "Parcel deleted successfully",
+        data: result,
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 module.exports = Parcel;
