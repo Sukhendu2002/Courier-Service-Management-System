@@ -36,13 +36,14 @@ class Staff {
       return "Branch does not exist";
     }
     sql =
-      "INSERT INTO staff (staff_name, staff_email, staff_password, staff_number) VALUES (?, ?, ?, ?)";
+      "INSERT INTO staff (staff_name, staff_email, staff_password, staff_number, branch_id) VALUES (?, ?, ?, ?, ?)";
     try {
       const result = await db.execute(sql, [
         this.staff_name,
         this.staff_email,
         this.staff_password,
         this.staff_number,
+        this.branch_id,
       ]);
       return {
         message: "Staff added successfully",

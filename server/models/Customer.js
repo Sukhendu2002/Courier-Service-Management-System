@@ -41,6 +41,12 @@ class Customer {
     const [rows] = await db.execute(sql, [email, password]);
     return rows[0];
   }
+
+  static async getAllCustomers() {
+    const sql = "SELECT * FROM customer";
+    const [rows] = await db.execute(sql);
+    return rows;
+  }
 }
 
 module.exports = Customer;

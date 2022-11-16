@@ -68,6 +68,17 @@ exports.getParcelById = async (req, res) => {
   }
 };
 
+exports.getParcelsByCustomerId = async (req, res) => {
+  const { customer_id } = req.params;
+  console.log(customer_id);
+  try {
+    const result = await Parcel.getParcelByCustomerId(customer_id);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.getAllParcels = async (req, res) => {
   try {
     const result = await Parcel.getAllParcels();
@@ -75,16 +86,4 @@ exports.getAllParcels = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-}
-
-exports.getParcelsByCustomerId = async (req, res) => {
-  const { customer_id } = req.params;
-
-  try {
-    const result = await Parcel.getParcelByCustomerId(customer_id);
-    res.status(200).json({ message: result });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
+};

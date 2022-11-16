@@ -130,6 +130,15 @@ class Parcel {
     }
     return rows;
   }
+
+  static async getAllParcels() {
+    let sql = "SELECT * FROM parcel";
+    const [rows] = await db.execute(sql);
+    if (rows.length == 0) {
+      return "No parcels found";
+    }
+    return rows;
+  }
 }
 
 module.exports = Parcel;

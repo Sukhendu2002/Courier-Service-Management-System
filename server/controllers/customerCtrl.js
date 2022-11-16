@@ -16,3 +16,8 @@ exports.login = async (req, res) => {
   const result = await Customer.login(customer_email, customer_password);
   res.send(result);
 };
+
+exports.getAllCustomers = async (req, res) => {
+  const result = await Customer.getAllCustomers();
+  res.send(result);
+}

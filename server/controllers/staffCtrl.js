@@ -2,12 +2,19 @@ const Staff = require("../models/Staff");
 
 exports.addStaff = async (req, res) => {
   try {
-    const { staff_name, staff_email, staff_password, staff_number } = req.body;
+    const {
+      staff_name,
+      staff_email,
+      staff_password,
+      staff_number,
+      branch_id,
+    } = req.body;
     const staff = new Staff(
       staff_name,
       staff_email,
       staff_password,
-      staff_number
+      staff_number,
+      branch_id
     );
     const result = await staff.create();
     res.status(201).json({ message: result });
