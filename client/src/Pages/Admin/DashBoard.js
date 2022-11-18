@@ -18,6 +18,7 @@ const DashBoard = () => {
   const [showParcel, setShowParcel] = useState(false);
   const [showAddParcel, setShowAddParcel] = useState(false);
   const [showDeleteParcel, setShowDeleteParcel] = useState(false);
+  const [showUpdateParcel, setShowUpdateParcel] = useState(false);
 
   // const getBranches = async () => {
   //   try {
@@ -62,6 +63,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
+              setShowUpdateParcel(false);
               setShowBranches(true);
             }}
           >
@@ -79,7 +81,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowAddBranch(true);
             }}
           >
@@ -97,7 +99,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowDeleteBranch(true);
             }}
           >
@@ -117,7 +119,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowStaff(true);
             }}
           >
@@ -135,7 +137,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowAddStaff(true);
             }}
           >
@@ -153,7 +155,7 @@ const DashBoard = () => {
               setShowParcel(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowDeleteStaff(true);
             }}
           >
@@ -173,7 +175,7 @@ const DashBoard = () => {
               setShowDeleteStaff(false);
               setShowAddParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowParcel(true);
             }}
           >
@@ -191,7 +193,7 @@ const DashBoard = () => {
               setShowDeleteStaff(false);
               setShowParcel(false);
               setShowDeleteParcel(false);
-
+              setShowUpdateParcel(false);
               setShowAddParcel(true);
             }}
           >
@@ -209,11 +211,29 @@ const DashBoard = () => {
               setShowDeleteStaff(false);
               setShowParcel(false);
               setShowAddParcel(false);
-
+              setShowUpdateParcel(false);
               setShowDeleteParcel(true);
             }}
           >
             Delete Parcel
+          </Button>{" "}
+          <Button
+            style={{ width: "200px", marginBottom: "20px" }}
+            variant="warning"
+            onClick={() => {
+              setShowBranches(false);
+              setShowAddBranch(false);
+              setShowDeleteBranch(false);
+              setShowStaff(false);
+              setShowAddStaff(false);
+              setShowDeleteStaff(false);
+              setShowParcel(false);
+              setShowAddParcel(false);
+              setShowDeleteParcel(false);
+              setShowUpdateParcel(true);
+            }}
+          >
+            Update Parcel
           </Button>{" "}
         </div>
       </div>
@@ -226,6 +246,7 @@ const DashBoard = () => {
       {showParcel && <ShowParcel />}
       {showAddParcel && <AddParcel />}
       {showDeleteParcel && <DeleteParcel />}
+      {showUpdateParcel && <UpdateParcel />}
     </div>
   );
 };
@@ -288,7 +309,15 @@ const ShowBranches = () => {
           </div>
         ))} */}
 
-        <Table striped bordered hover>
+        <Table
+          striped
+          bordered
+          hover
+          //make the border back
+          style={{
+            borderColor: "black",
+          }}
+        >
           <thead>
             <tr>
               <th>ID</th>
@@ -496,7 +525,14 @@ const ShowStaff = () => {
           alignItems: "center",
         }}
       >
-        <Table striped bordered hover>
+        <Table
+          striped
+          bordered
+          hover
+          style={{
+            borderColor: "black",
+          }}
+        >
           <thead>
             <tr>
               <th>ID</th>
@@ -709,6 +745,8 @@ const ShowParcel = () => {
   const [data, setData] = useState([]);
   const [branch, setBranch] = useState([]);
   const [customer, setCustomer] = useState([]);
+  //
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     getAllBranches();
@@ -718,7 +756,6 @@ const ShowParcel = () => {
       console.log(res.data.message);
     });
   }, []);
-
   const getAllBranches = async () => {
     try {
       await axios.get(`${server}/api/branch/`).then((res) => {
@@ -741,16 +778,29 @@ const ShowParcel = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (status === "") {
+      alert("Please fill all the fields");
+      return;
+    }
+    console.log(status);
+    if (status == 0) {
+      axios.get(`${server}/api/parcel/`).then((res) => {
+        setData(res.data.message);
+        console.log(res.data.message);
+      });
+    } else {
+      const filteredData = data.filter((item) => item.parcel_status === status);
+      console.log(filteredData);
+      setData(filteredData);
+    }
+  };
+
   return (
     <div className="container">
-      <h1
-        //make it center
-        style={{ textAlign: "center", marginTop: "20px" }}
-      >
-        Show Parcel
-      </h1>
+      <h1 style={{ textAlign: "center", marginTop: "20px" }}>Show Parcel</h1>
       <div
-        //make it center
         style={{
           textAlign: "center",
           marginTop: "20px",
@@ -760,7 +810,40 @@ const ShowParcel = () => {
           alignItems: "center",
         }}
       >
-        <Table striped bordered hover>
+        <Form
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Parcel Status</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="0">All</option>
+              <option value="Delivered">Delivered</option>
+              <option value="In Transit">In Transit</option>
+              <option value="Returned">Returned</option>
+            </Form.Control>
+          </Form.Group>
+        </Form>
+        <Button
+          style={{ width: "200px", marginTop: "20px" }}
+          variant="success"
+          onClick={handleSubmit}
+        >
+          Filter
+        </Button>{" "}
+        <Table
+          striped
+          bordered
+          hover
+          style={{
+            borderColor: "black",
+          }}
+        >
           <thead>
             <tr>
               <th>Parcel ID</th>
@@ -1032,6 +1115,279 @@ const DeleteParcel = () => {
           </Button>
         </Form>
       </div>
+    </div>
+  );
+};
+
+const UpdateParcel = () => {
+  const [parcelId, setParcelId] = useState("");
+  const [showUpdateHelper, setShowUpdateHelper] = useState(false);
+  const [data, setData] = useState({});
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (parcelId === "") {
+      alert("Please select a parcel");
+      return;
+    }
+    try {
+      //get the details of the parcel
+      await axios.get(`${server}/api/parcel/${parcelId}`).then(
+        (res) => {
+          if (res.data.message === "Parcel ID does not exist") {
+            alert("Parcel not found");
+            setParcelId("");
+            return;
+          }
+          console.log(res.data.message);
+          setData(res.data.message);
+          setShowUpdateHelper(true);
+        }
+        //update the details of the parcel
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1
+        //make it center
+        style={{ textAlign: "center", marginTop: "20px" }}
+      >
+        Update Parcel
+      </h1>
+      {!showUpdateHelper ? (
+        <div
+          //make it center
+          style={{
+            textAlign: "center",
+            marginTop: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Parcel Id</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Parcel Id"
+                value={parcelId}
+                onChange={(e) => setParcelId(e.target.value)}
+              />
+            </Form.Group>
+
+            <Button
+              style={{
+                marginTop: "20px",
+                width: "100px",
+                marginBottom: "20px",
+              }}
+              variant="primary"
+              type="submit"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </Form>
+        </div>
+      ) : (
+        <div
+          //make it center
+          style={{
+            textAlign: "center",
+            marginTop: "20px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {showUpdateHelper && <UpdateParcelHelper data={data} />}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const UpdateParcelHelper = ({ data }) => {
+  const [senderBranchId, setSenderBranchId] = useState(
+    data[0].sender_branch_id
+  );
+  const [receiverBranchId, setReceiverBranchId] = useState(
+    data[0].receiver_branch_id
+  );
+  const [customerId, setCustomerId] = useState(data[0].customer_id);
+  const [parcelId, setParcelId] = useState(data[0].parcel_id);
+  const [parcelName, setParcelName] = useState(data[0].parcel_name);
+  const [parcelStatus, setParcelStatus] = useState(data[0].parcel_status);
+  const [applyDate, setApplyDate] = useState(data[0].created_at);
+  const [deliveryDate, setDeliveryDate] = useState(
+    data[0].expected_delivery_date.substring(0, 10)
+  );
+  const [branchList, setBranchList] = useState([]);
+
+  useEffect(() => {
+    getAllBranches();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      senderBranchId === "" ||
+      receiverBranchId === "" ||
+      customerId === "" ||
+      parcelId === "" ||
+      parcelName === "" ||
+      parcelStatus === "" ||
+      applyDate === "" ||
+      deliveryDate === ""
+    ) {
+      alert("Please fill all the fields");
+      return;
+    }
+    try {
+      console.log(deliveryDate);
+      await axios
+        .patch(`${server}/api/parcel/update`, {
+          parcel_id: parcelId,
+          parcel_status: parcelStatus,
+          parcel_name: parcelName,
+          sender_branch_id: senderBranchId,
+          receiver_branch_id: receiverBranchId,
+          expected_delivery_date: deliveryDate,
+        })
+        .then((res) => {
+          console.log(res);
+          alert("Parcel Updated");
+        });
+    } catch (error) {
+      //update the details of the parcel
+      console.log(error);
+    }
+  };
+
+  const getAllBranches = async () => {
+    try {
+      await axios.get(`${server}/api/branch/`).then((res) => {
+        setBranchList(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div
+      //make it center
+      style={{
+        textAlign: "center",
+        marginTop: "20px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <h3>Parcel Id: {parcelId}</h3>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Parcel Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Parcel Name"
+            value={parcelName}
+            onChange={(e) => setParcelName(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Sender Branch Id</Form.Label>
+          <Form.Control
+            as="select"
+            value={
+              senderBranchId === null ? "Select Sender Branch" : senderBranchId
+            }
+            onChange={(e) => setSenderBranchId(e.target.value)}
+          >
+            {branchList.map((branch) => (
+              <option value={branch.branch_id}>{branch.branch_name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Receiver Branch Id</Form.Label>
+          <Form.Control
+            as="select"
+            value={
+              receiverBranchId === null
+                ? "Select Receiver Branch"
+                : receiverBranchId
+            }
+            onChange={(e) => setReceiverBranchId(e.target.value)}
+          >
+            {branchList.map((branch) => (
+              <option value={branch.branch_id}>{branch.branch_name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Customer Id</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Customer Id"
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+            disabled
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Parcel Status</Form.Label>
+          <Form.Control
+            as="select"
+            value={
+              parcelStatus === null ? "Select Parcel Status" : parcelStatus
+            }
+            onChange={(e) => setParcelStatus(e.target.value)}
+          >
+            <option value="In Transit">In Transit</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Returned">Returned</option>
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Expected Delivery Date</Form.Label>
+          <Form.Control
+            type="date"
+            placeholder="Enter Expected Delivery Date"
+            value={deliveryDate.substring(0, 10)}
+            onChange={(e) => setDeliveryDate(e.target.value)}
+          />
+        </Form.Group>
+
+        <Button
+          style={{
+            marginTop: "20px",
+            width: "100px",
+            marginBottom: "20px",
+          }}
+          variant="primary"
+          type="submit"
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
+      </Form>
     </div>
   );
 };

@@ -1,13 +1,13 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const Home = () => {
   const [user, setUser] = useState(null);
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    setUser(JSON.parse(user));
-  }, []);
+  // useEffect(() => {
+  //   const user = localStorage.getItem("user");
+  //   setUser(JSON.parse(user));
+  // }, []);
   return (
     <div className="container">
       <h1
@@ -39,17 +39,17 @@ const Home = () => {
           style={{ width: "200px", marginBottom: "20px" }}
           variant="secondary"
           as={Link}
-          to="/branchlogin"
+          to="/stafflogin"
         >
-          Branch Head Login
+          Staff Login
         </Button>{" "}
         <Button
           style={{ width: "200px", marginBottom: "20px" }}
           variant="success"
           as={Link}
-          to="/stafflogin"
+          to="/userlogin"
         >
-          Staff Login
+          User Login
         </Button>{" "}
       </div>
     </div>

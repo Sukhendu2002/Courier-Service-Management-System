@@ -20,4 +20,4 @@ exports.login = async (req, res) => {
 exports.getAllCustomers = async (req, res) => {
   const result = await Customer.getAllCustomers();
   res.send(result);
-}
+};

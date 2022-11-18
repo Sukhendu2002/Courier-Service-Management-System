@@ -47,10 +47,24 @@ exports.createParcel = async (req, res) => {
 };
 
 exports.updateStatus = async (req, res) => {
-  const { parcel_id, parcel_status } = req.body;
+  const {
+    parcel_id,
+    parcel_status,
+    parcel_name,
+    sender_branch_id,
+    receiver_branch_id,
+    expected_delivery_date,
+  } = req.body;
 
   try {
-    const result = await Parcel.updateParcelStatus(parcel_id, parcel_status);
+    const result = await Parcel.updateParcelStatus(
+      parcel_id,
+      parcel_status,
+      parcel_name,
+      sender_branch_id,
+      receiver_branch_id,
+      expected_delivery_date
+    );
     res.status(200).json({ message: result });
   } catch (err) {
     console.log(err);
@@ -58,10 +72,10 @@ exports.updateStatus = async (req, res) => {
 };
 
 exports.getParcelById = async (req, res) => {
-  const { parcel_id } = req.params;
+  const { id } = req.params;
 
   try {
-    const result = await Parcel.getParcelById(parcel_id);
+    const result = await Parcel.getParcelById(id);
     res.status(200).json({ message: result });
   } catch (err) {
     console.log(err);
@@ -69,7 +83,7 @@ exports.getParcelById = async (req, res) => {
 };
 
 exports.getParcelsByCustomerId = async (req, res) => {
-  const { customer_id } = req.body;
+  const { customer_id } = req.params;
   console.log(customer_id);
   try {
     const result = await Parcel.getParcelByCustomerId(customer_id);

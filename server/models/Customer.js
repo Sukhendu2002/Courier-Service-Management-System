@@ -36,6 +36,7 @@ class Customer {
   }
 
   static async login(email, password) {
+    console.log(email, password);
     const sql =
       "SELECT * FROM customer WHERE customer_email = ? AND customer_password = ?";
     const [rows] = await db.execute(sql, [email, password]);

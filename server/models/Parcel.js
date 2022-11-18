@@ -94,18 +94,48 @@ class Parcel {
     }
   }
 
-  static async updateParcelStatus(parcel_id, parcel_status) {
+  static async updateParcelStatus(
+    parcel_id,
+    parcel_status,
+    parcel_name,
+    sender_branch_id,
+    receiver_branch_id,
+    expected_delivery_date
+  ) {
     let sql = "SELECT * FROM parcel WHERE parcel_id = ?";
     const [rows] = await db.execute(sql, [parcel_id]);
     if (rows.length == 0) {
       return "Parcel ID does not exist";
     }
 
-    sql = "UPDATE parcel SET parcel_status = ? WHERE parcel_id = ?";
+    sql = "SELECT * FROM branch WHERE branch_id = ?";
+    const [rows2] = await db.execute(sql, [sender_branch_id]);
+    if (rows2.length == 0) {
+      return "Sender Branch ID does not exist";
+    }
+
+    sql = "SELECT * FROM branch WHERE branch_id = ?";
+    const [rows3] = await db.execute(sql, [receiver_branch_id]);
+    if (rows3.length == 0) {
+      return "Receiver Branch ID does not exist";
+    }
+    if (sender_branch_id == receiver_branch_id) {
+      return "Sender and Receiver Branch ID cannot be the same";
+    }
+
+    sql =
+      "UPDATE parcel SET parcel_status = ?, parcel_name = ?, sender_branch_id = ?, receiver_branch_id = ?, expected_delivery_date = ? WHERE parcel_id = ?";
     try {
-      const result = await db.execute(sql, [parcel_status, parcel_id]);
+      const result = await db.execute(sql, [
+        parcel_status,
+        parcel_name,
+        sender_branch_id,
+        receiver_branch_id,
+        expected_delivery_date,
+        parcel_id,
+      ]);
       return {
-        message: "Parcel status updated successfully",
+        message: "Parcel updated successfully",
         data: result,
       };
     } catch (err) {
