@@ -747,7 +747,9 @@ const ShowParcel = () => {
   const [customer, setCustomer] = useState([]);
   //
   const [status, setStatus] = useState("");
-
+  const [senderBranch, setSenderBranch] = useState("");
+  const [receiverBranch, setReceiverBranch] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
   useEffect(() => {
     getAllBranches();
     getAllCustomers();
@@ -780,20 +782,36 @@ const ShowParcel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (status === "") {
-      alert("Please fill all the fields");
+    if (
+      status === "" &&
+      senderBranch === "" &&
+      receiverBranch === "" &&
+      createdAt === ""
+    ) {
+      alert("Please fill any one field");
       return;
     }
-    console.log(status);
-    if (status == 0) {
-      axios.get(`${server}/api/parcel/`).then((res) => {
-        setData(res.data.message);
-        console.log(res.data.message);
-      });
-    } else {
-      const filteredData = data.filter((item) => item.parcel_status === status);
-      console.log(filteredData);
-      setData(filteredData);
+    try {
+      await axios
+        .get(`${server}/api/parcel/product/filter/`, {
+          params: {
+            status: status == "0" ? "" : status,
+            senderBranch: senderBranch == "0" ? "" : senderBranch,
+            receiverBranch: receiverBranch == "0" ? "" : receiverBranch,
+            createdAt: createdAt == "0" ? "" : createdAt,
+          },
+        })
+        .then((res) => {
+          console.log(res.data.message);
+          // setData(res.data.message);
+          if (res.data.message === "No parcels found") {
+            alert("No parcels found");
+            return;
+          }
+          setData(res.data.message);
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -816,11 +834,15 @@ const ShowParcel = () => {
             flexDirection: "row",
           }}
         >
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group
+            controlId="formBasicEmail"
+            style={{ marginRight: "20px" }}
+          >
             <Form.Label>Parcel Status</Form.Label>
             <Form.Control
               as="select"
               onChange={(e) => setStatus(e.target.value)}
+              value={status}
             >
               <option value="0">All</option>
               <option value="Delivered">Delivered</option>
@@ -828,14 +850,91 @@ const ShowParcel = () => {
               <option value="Returned">Returned</option>
             </Form.Control>
           </Form.Group>
+
+          <Form.Group
+            controlId="formBasicEmail"
+            style={{ marginRight: "20px" }}
+          >
+            <Form.Label>Sender Branch</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setSenderBranch(e.target.value)}
+              value={senderBranch}
+            >
+              <option value="0">All</option>
+              {branch.map((item) => (
+                <option value={item.branch_id}>{item.branch_name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group
+            controlId="formBasicEmail"
+            style={{ marginRight: "20px" }}
+          >
+            <Form.Label>Receiver Branch</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => setReceiverBranch(e.target.value)}
+              value={receiverBranch}
+            >
+              <option value="0">All</option>
+              {branch.map((item) => (
+                <option value={item.branch_id}>{item.branch_name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
+          <Form.Group
+            controlId="formBasicEmail"
+            style={{ marginRight: "20px" }}
+          >
+            <Form.Label>Requested Date</Form.Label>
+            <Form.Control
+              type="date"
+              onChange={(e) => setCreatedAt(e.target.value)}
+              value={createdAt}
+            />
+          </Form.Group>
         </Form>
-        <Button
-          style={{ width: "200px", marginTop: "20px" }}
-          variant="success"
-          onClick={handleSubmit}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "20px",
+            marginBottom: "20px",
+          }}
         >
-          Filter
-        </Button>{" "}
+          <Button
+            style={{
+              width: "200px",
+              marginRight: "20px",
+            }}
+            variant="success"
+            onClick={handleSubmit}
+          >
+            Filter
+          </Button>{" "}
+          <Button
+            style={{ width: "200px", marginLeft: "20px" }}
+            variant="success"
+            onClick={(e) => {
+              axios.get(`${server}/api/parcel/`).then((res) => {
+                setData(res.data.message);
+                console.log(res.data.message);
+              });
+              setStatus("");
+              setSenderBranch("");
+              setReceiverBranch("");
+              setCreatedAt("");
+            }}
+          >
+            Reset
+          </Button>{" "}
+        </div>
+
         <Table
           striped
           bordered
@@ -884,18 +983,16 @@ const ShowParcel = () => {
                   })}
                 </td>
                 <td>
-                  {parcel.created_at.substring(8, 10) +
-                    "/" +
-                    parcel.created_at.substring(5, 7) +
-                    "/" +
-                    parcel.created_at.substring(0, 4)}
+                  {
+                    // 2022-11-18T18:30:00.000Z
+                    parcel.created_at.split("T")[0]
+                  }
                 </td>
                 <td>
-                  {parcel.expected_delivery_date.substring(8, 10) +
-                    "/" +
-                    parcel.expected_delivery_date.substring(5, 7) +
-                    "/" +
-                    parcel.expected_delivery_date.substring(0, 4)}
+                  {
+                    // 2022-11-18T18:30:00.000Z
+                    parcel.expected_delivery_date.split("T")[0]
+                  }
                 </td>
               </tr>
             ))}

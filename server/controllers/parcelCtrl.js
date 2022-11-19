@@ -111,3 +111,18 @@ exports.deleteParcel = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.filterParcels = async (req, res) => {
+  const { status, senderBranch, receiverBranch, createdAt } = req.query;
+  try {
+    const result = await Parcel.filterParcels(
+      status,
+      senderBranch,
+      receiverBranch,
+      createdAt
+    );
+    res.status(200).json({ message: result });
+  } catch (err) {
+    console.log(err);
+  }
+};

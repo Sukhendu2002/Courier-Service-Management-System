@@ -188,6 +188,166 @@ class Parcel {
       console.log(err);
     }
   }
+
+  static async filterParcels(status, senderBranch, receiverBranch, createdAt) {
+    console.log(status, senderBranch, receiverBranch, createdAt);
+    //drop everything from temp table
+    let sql;
+
+    //put all parcels in temp table
+    // sql = "INSERT INTO temp SELECT * FROM parcel";
+    // await db.execute(sql);
+
+    // if (status != "") {
+    //   sql = "DELETE FROM temp";
+    //   await db.execute(sql);
+
+    //   sql = "SELECT * FROM parcel WHERE parcel_status = ?";
+    //   const [rows] = await db.execute(sql, [status]);
+    //   if (rows.length == 0) {
+    //     return "No parcels found";
+    //   }
+    //   console.log(rows);
+    //   // indert the data into temp table
+    //   sql =
+    //     "INSERT INTO temp (parcel_id,customer_id, parcel_name,sender_branch_id, receiver_branch_id, created_at, expected_delivery_date,parcel_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    //   try {
+    //     for (let i = 0; i < rows.length; i++) {
+    //       const result = await db.execute(sql, [
+    //         rows[i].parcel_id,
+    //         rows[i].customer_id,
+    //         rows[i].parcel_name,
+    //         rows[i].sender_branch_id,
+    //         rows[i].receiver_branch_id,
+    //         rows[i].created_at,
+    //         rows[i].expected_delivery_date,
+    //         rows[i].parcel_status,
+    //       ]);
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // }
+
+    // if (senderBranch != "") {
+    //   sql = "SELECT * FROM temp WHERE sender_branch_id = ?";
+    //   const [rows2] = await db.execute(sql, [senderBranch]);
+    //   if (rows2.length == 0) {
+    //     return "No parcels found";
+    //   }
+    //   //delete everything from temp table
+    //   sql = "DELETE FROM temp";
+    //   await db.execute(sql);
+    //   // indert the data into temp table
+    //   sql =
+    //     "INSERT INTO temp (parcel_id,customer_id, parcel_name,sender_branch_id, receiver_branch_id, created_at, expected_delivery_date,parcel_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    //   try {
+    //     for (let i = 0; i < rows2.length; i++) {
+    //       const result = await db.execute(sql, [
+    //         rows2[i].parcel_id,
+    //         rows2[i].customer_id,
+    //         rows2[i].parcel_name,
+    //         rows2[i].sender_branch_id,
+    //         rows2[i].receiver_branch_id,
+    //         rows2[i].created_at,
+    //         rows2[i].expected_delivery_date,
+    //         rows2[i].parcel_status,
+    //       ]);
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // }
+
+    // if (receiverBranch != "") {
+    //   sql = "SELECT * FROM temp WHERE receiver_branch_id = ?";
+    //   const [rows3] = await db.execute(sql, [receiverBranch]);
+    //   if (rows3.length == 0) {
+    //     return "No parcels found";
+    //   }
+    //   //delete everything from temp table
+    //   sql = "DELETE FROM temp";
+    //   await db.execute(sql);
+    //   // indert the data into temp table
+    //   sql =
+    //     "INSERT INTO temp (parcel_id,customer_id, parcel_name,sender_branch_id, receiver_branch_id, created_at, expected_delivery_date,parcel_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    //   try {
+    //     for (let i = 0; i < rows3.length; i++) {
+    //       const result = await db.execute(sql, [
+    //         rows3[i].parcel_id,
+    //         rows3[i].customer_id,
+    //         rows3[i].parcel_name,
+    //         rows3[i].sender_branch_id,
+    //         rows3[i].receiver_branch_id,
+    //         rows3[i].created_at,
+    //         rows3[i].expected_delivery_date,
+    //         rows3[i].parcel_status,
+    //       ]);
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // }
+
+    // if (
+    //   status != " " &&
+    //   senderBranch != " " &&
+    //   receiverBranch != " " &&
+    //   createdAt != " "
+    // ) {
+    //   sql =`
+    //     "SELECT * FROM parcel WHERE parcel_status = ? AND sender_branch_id = ? AND receiver_branch_id = ? AND created_at = ?";`
+    //   const [rows] = await db.execute(sql, [
+    //     status,
+    //     senderBranch,
+    //     receiverBranch,
+    //     createdAt,
+    //   ]);
+    //   if (rows.length == 0) {
+    //     return "No parcels found";
+    //   }
+    //   return rows;
+    // }
+
+    sql = "SELECT * FROM parcel WHERE ";
+    if (status != "") {
+      sql += "AND parcel_status = ?";
+    }
+    if (senderBranch != "") {
+      sql += " AND sender_branch_id = ?";
+    }
+    if (receiverBranch != "") {
+      sql += " AND receiver_branch_id = ?";
+    }
+    if (createdAt != "") {
+      sql += " AND created_at = ?";
+    }
+    // console.log(sql);
+    //remove the first AND from the query
+    sql = sql.replace("AND", "");
+    //make an array of the values to be inserted into the query , insert the values that are not empty
+    const values = [];
+    if (status != "") {
+      values.push(status);
+    }
+    if (senderBranch != "") {
+      values.push(senderBranch);
+    }
+    if (receiverBranch != "") {
+      values.push(receiverBranch);
+    }
+    if (createdAt != "") {
+      values.push(createdAt);
+    }
+    const [rows] = await db.execute(sql, values);
+    if (rows.length == 0) {
+      return "No parcels found";
+    }
+    return rows;
+  }
+  catch(err) {
+    console.log(err);
+  }
 }
 
 module.exports = Parcel;
