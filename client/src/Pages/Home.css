@@ -1,0 +1,14 @@
+.hero {
+  background-image: url(../../public/hero2.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 95vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /* //stretch to fill the entire screen */
+  overflow: hidden;
+}
