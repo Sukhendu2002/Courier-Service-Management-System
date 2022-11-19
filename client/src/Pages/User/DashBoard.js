@@ -82,22 +82,18 @@ const AddParcel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      parcelName === "" ||
-      senderBranch === "" ||
-      receiverBranch === "" ||
-      customerId === ""
-    ) {
+    if (parcelName === "" || senderBranch === "" || receiverBranch === "") {
       alert("Please fill all the fields");
       return;
     }
+    const id = JSON.parse(localStorage.getItem("user")).customer_id;
     try {
       await axios
         .post(`${server}/api/parcel/add`, {
           parcel_name: parcelName,
           sender_branch_id: senderBranch,
           receiver_branch_id: receiverBranch,
-          customer_id: customerId,
+          customer_id: id,
         })
         .then((res) => {
           console.log(res);

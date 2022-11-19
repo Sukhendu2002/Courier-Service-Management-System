@@ -11,10 +11,12 @@ exports.createParcel = async (req, res) => {
 
   const parcel_id = genRanHex(6);
   const parcel_status = "In Transit";
-  const created_at = new Date();
+  const created_at = new Date().toISOString().slice(0, 10);
   const expected_delivery_date = new Date(
-    created_at.getTime() + 7 * 24 * 60 * 60 * 1000
-  );
+    new Date().getTime() + 5 * 24 * 60 * 60 * 1000
+  )
+    .toISOString()
+    .slice(0, 10);
 
   console.log({
     parcel_id,
