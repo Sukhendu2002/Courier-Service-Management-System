@@ -1,7 +1,8 @@
--- creating schema
-CREATE SCHEMA `courier_system` ;
+--create schema  
+ CREATE SCHEMA `courier_system` ;
+use courier_system;
 
--- admin table
+--create admin table
 CREATE TABLE `courier_system`.`admin` (
   `admin_id` INT NOT NULL AUTO_INCREMENT,
   `admin_name` VARCHAR(50) NOT NULL,
@@ -12,23 +13,23 @@ CREATE TABLE `courier_system`.`admin` (
   UNIQUE INDEX `admin_id_UNIQUE` (`admin_id` ASC) VISIBLE,
   UNIQUE INDEX `admin_email_UNIQUE` (`admin_email` ASC) VISIBLE);
   
--- branch table
-CREATE TABLE `courier_system`.`branch` (
+  --create branch table
+  CREATE TABLE `courier_system`.`branch` (
   `branch_id` INT NOT NULL AUTO_INCREMENT,
   `branch_name` VARCHAR(45) NOT NULL,
   `branch_address` TEXT NOT NULL,
   PRIMARY KEY (`branch_id`));
-
--- customer table
+  
+ --create customer table 
 CREATE TABLE `courier_system`.`customer` (
   `customer_id` INT NOT NULL AUTO_INCREMENT,
   `customer_name` VARCHAR(45) NOT NULL,
   `customer_email` VARCHAR(45) NOT NULL,
   `customer_password` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`customer_id`));
-
--- parcel table
-CREATE TABLE `courier_system`.`parcel` (
+  
+  --create parcel table
+  CREATE TABLE `courier_system`.`parcel` (
   `parcel_id` VARCHAR(6) NOT NULL,
   `customer_id` INT NOT NULL,
   `parcel_name` VARCHAR(45) NOT NULL,
@@ -38,4 +39,8 @@ CREATE TABLE `courier_system`.`parcel` (
   `expected_delivery_date` VARCHAR(11) NOT NULL,
   `parcel_status` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`parcel_id`),
-  UNIQUE INDEX `parcel_id_UNIQUE` (`parcel_id` ASC) VISIBLE);
+  FOREIGN KEY(`customer_id`) REFERENCES customer(`customer_id`),
+  FOREIGN KEY(`sender_branch_id`) REFERENCES branch(`branch_id`),
+  FOREIGN KEY(`receiver_branch_id`) REFERENCES branch(`branch_id`),
+  UNIQUE INDEX `parcel_id_UNIQUE` (`parcel_id` ASC) VISIBLE);
+  
